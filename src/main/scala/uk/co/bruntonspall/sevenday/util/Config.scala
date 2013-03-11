@@ -1,4 +1,4 @@
-package  uk.co.bruntonspall.sevenday.util
+package uk.co.bruntonspall.sevenday.util
 
 import com.typesafe.config.ConfigFactory
 
