@@ -1,0 +1,15 @@
+@(map:World, character:Player)
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>Map</title>
+	</head>
+  <body>
+    <h1>Space 7-Day Roguelike</h1>
+    <pre>
+    @for( y <- 0 to map.height-1 ){
+      @for( x <- 0 to map.width-1 ){ @map.getTileAt(x,y).glyph }
+    }
+    </pre>
+	</body>
+</html>
