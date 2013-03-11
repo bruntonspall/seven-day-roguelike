@@ -1,0 +1,68 @@
+Welcome to my tumblr thingy about the seven day roguelike challange.  My name is [@bruntonspall](http://twitter.com/bruntonspall) and I'm a web scala developer who thought it'd be fun to do a roguelike in my copious spare time.
+
+This post marks the beginning of the project, I guess I should go checkout this [7drl](http://7drl.org) project and get thinking about what I'm gonna do.
+
+Shit!
+
+So I'm 2 days late already.  The 7drl project started on Saturday, and it's now monday night.
+
+So now I need an idea, some things to work on and I have only 5 more days to do it.
+Furthermore, I've never successfully completed a roguelike before, I've got a massive project on at work and I'm running a conference on Friday/Saturday, so this is a pretty bad week to start a programming project.
+
+But I get at least 2 hours per day on the train that is undisturbed, I wonder how far I can get with a 12 hours of internet-less development and a few caught hours here and there?
+
+So what the hell am I going to work on?
+
+I know next to nothing about curses style interfaces, and while that could be fun, my expertise is mostly in Scala and web applications.
+I've never seen a web absed roguelike done well, and I wonder if there's a good reason for that, or if it's just a latency issue?
+
+So technology wise, I'm looking at technologies I already know, and that work offline. For me that means AppEngine and Scala.  I know them well, AppEngine has a couple of cool features, and I think there's a few cool things I can do to massively reduce latency.
+
+
+Choosing a theme
+----------------
+
+Everybody creates a fantasy roguelike, hell when I was 15 and doing my GCSE's I created a roguelike with elves and orcs for my computer science project. (I got an F, "Games are not real computer programs").  Can we look at another genre?
+Here's a few ideas, what would a western look like?  Nah I don't really have an overarching theme for that, mostly because I've never really watched westerns.
+
+How about a SciFi theme?  We could go down the Space Hulk / Space Quest kind of route, generate a random abandoned vessel, have you as the intrepid explorer moving around this vessel, finding aliens, and artifacts.
+
+Alternately we could go down the Elite kind of SciFi, with trading posts, worlds and pirates.  Space Pirates!
+
+Cool, I think we've got a theme, I just need to decide between the two of them.  I feel like the exploring the inside of spaceships has the easiest feel to it.  I can create a spaceship layout generator by just subdividing the hull down, allocating rooms to certain functions, and then randomly populate with aliens.
+
+We can add goals per hulk, so you are trying to go in and get back out, then you do it again.
+
+Secondly, we can start the game with a gun quite reasonably, and I like the idea of being able to shoot stuff in a Roguelike, you don't get to do it often.
+
+Now I need a few basic ideas.  What do I do in my first hour or two at home on a monday night?  I've got a pint of Bitter, I've got a pad and paper and thanks to some DIY this weekend, I've even got a whiteboard.  Let's get designing.
+
+Some tech considerations
+------------------------
+
+
+I'm going to do this system in a Scala/Functional form.  It's going to be web request/response, so I'll need to think how actions and responses can be done.
+
+Let's say that actions equate to a POST to /action with the relevant command.
+
+It'd be cool to be able to play with curl, so we'll stick to an Ascii map, and we'll make sure each action has a single command shortcut.  I want `curl -XPOST -daction=l http://myapp/bruntonspall/action` to perform the action, and return an ASCII rendering of the world.
+
+Obviously we'll also have a HTML rendering, but lets basically do it as a PRE tag with a 40x24 tile ascii display.  We also need a status line, and maybe we'll add some character guff on the webpage later.  For now let's get the basics done.
+
+The final tasklike
+------------------
+
+Ok, so we need the following done in the next hour:
+
+   * Create basic webapp (done, I have a g8 template on github)
+   * Create a tumblr blog and publish this!
+   * Create a fixed ship (we'll skip world building for now)
+   * Put our character and 1 monster, 1 treasure on the map
+   * Accept an HTTP POST input to move the player
+   * Run an AI sequence on each timestep to move the aliens
+   * Add the abilitiy to shoot and damage the alien
+   * Give the alien the ability to hit and hurt the player
+   * Pickup an item by walking over it
+   * Detect making it back to the start zone with the item as a Win
+
+That seems like enough to start with, I'm going to work on that, and see how far I can get in the next few hours.
