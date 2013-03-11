@@ -66,3 +66,5 @@ Ok, so we need the following done in the next hour:
    * Detect making it back to the start zone with the item as a Win
 
 That seems like enough to start with, I'm going to work on that, and see how far I can get in the next few hours.
+
+_This entry was written to the musical workings of [2112: Rush](https://itunes.apple.com/us/album/2112/id586783308)_
