@@ -1,15 +1,31 @@
-@(map:World, character:Player)
+@(map:Seq[Seq[String]])
 <!DOCTYPE html>
 <html lang="en">
 	<head>
-		<title>Map</title>
+    <title>Map</title>
+    <style type="text/css">
+    .glyph {
+      float: left;
+      display: block;
+      width: 18px;
+      height: 18px;
+    }
+    .row {
+      clear: both;
+    }
+    </style>
 	</head>
   <body>
     <h1>Space 7-Day Roguelike</h1>
-    <pre>
-    @for( y <- 0 to map.height-1 ){
-      @for( x <- 0 to map.width-1 ){ @map.getTileAt(x,y).glyph }
+    <div class="map">
+    @for(row <- map) {
+      <div class="row">
+        @for(cell <- row) {
+          <span class="glyph">@Html(cell)</span>
+        }
+      </div>
     }
+    </div>
     </pre>
 	</body>
 </html>
