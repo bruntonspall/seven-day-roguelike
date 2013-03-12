@@ -46,3 +46,9 @@ We have our first lack of internet problem.  I've not done coffeescript in Scala
 I'm using my phone as a Wifi Hotpsot, but on a speeding train, with tunnels, it isn't brilliant.
 
 I'll give it another 5 minutes, then I'll remove the coffeescript processors for now, and do it in plain javascript.
+
+== 10 more minutes
+
+That was painful.  CoffeeScript isn't working, and my jquery $.post isn't posting the data to the endpoint.  Frustratiing isn't quite the word.
+
+I'll come back to this
