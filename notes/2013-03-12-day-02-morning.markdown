@@ -1,0 +1,27 @@
+== First morning train journey
+
+I have 55 minutes, and no easy internet access.
+
+I've got 2 possible things to do on this journey
+
+  * Random map generation
+  * Player movement
+
+I really want to play with Map generation algorithms, but I think player movement is a better idea right now.  It will at least give me something to run around, and feel a bit more interactive.
+
+So I'll need to develop two main parts of the system.
+  * A decent rendering compositor
+  * An input system
+
+The rendering compositor is going to work out what to render at any given point on the map.
+Thanks to last nights work, I've already built a vague interface that is based on rendering sequences of sequences of glyphs.
+This gives me a list of rows, with each row being a list of cells, and each cell being a renderable glyph.
+For rendering this will do fine, but we'll need to render things by choosing an order.
+I think we'll keep a list of creatures and a list of objects.  Each creature and object will have a location and a renderable glyph, so we'll walk through the rows and cells, and render the first of a creature, an object, a map tile.
+The most difficult part of this is that because I've got rows and cells, and they are in order I'm not keeping the x and y coordinates.  I think that will have to change.
+
+Secondly I'll need to build an input system.  I'd like to go for a slightly different input system, because there's an idea for the space theme that's sitting in the back of my head.  I want to allow the user to select an action like Move, or Shoot, then select the target location.  Once done, the game will advance a step, perform AI movements, and go back to where we were.
+
+Why add this complexity?  We'll see if it's worth it later down the week.
+
+Now let's start coding
