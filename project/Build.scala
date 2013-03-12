@@ -3,6 +3,8 @@ import Keys._
 import sbtappengine.Plugin.appengineSettings
 import com.typesafe.sbt.SbtScalariform.scalariformSettings
 import twirl.sbt.TwirlPlugin._
+import com.bowlingx.sbt.plugins.Wro4jPlugin._
+import Wro4jKeys._
 
 object sevenDayRoguelikeBuild  extends Build {
 
@@ -38,6 +40,7 @@ object sevenDayRoguelikeBuild  extends Build {
     .settings(appengineSettings: _*)
     .settings(scalariformSettings: _*)
     .settings(Twirl.settings: _*)
+    .settings(wro4jSettings: _*)
     .settings(
       Twirl.twirlImports := Seq("uk.co.bruntonspall.sevenday.model._")
     )
