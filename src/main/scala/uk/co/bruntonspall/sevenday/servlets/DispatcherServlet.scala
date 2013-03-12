@@ -23,4 +23,11 @@ class DispatcherServlet extends ScalatraServlet with TwirlSupport {
     html.map.render(Renderer.render(World.map0, List(PlayerMobile(1, 13, '@', "@"))))
   }
 
+  post("/execute") {
+    contentType = "text/html"
+    <ul>{
+      params.keys.map(param => <li>{ param }</li>)
+    }</ul>
+  }
+
 }
