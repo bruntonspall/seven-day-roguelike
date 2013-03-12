@@ -25,3 +25,16 @@ Secondly I'll need to build an input system.  I'd like to go for a slightly diff
 Why add this complexity?  We'll see if it's worth it later down the week.
 
 Now let's start coding
+
+== 15 minutes later
+
+I've got an @ on the map, that's good.
+
+Now that input system.  This could be a bit tricky.
+
+I could cheat for now, and just allow an action like /action/moveup or something similar that executes moving the @ symbol up.
+Alternately, I could add several calls, /action/setmovetarget?character=1&x=3&y=3, then an /action/executemoves.  The problem with that is that the latency is going to be an issue if we have to wait for the target to be set.
+The other alternative is to make the setting of the targets to be done in javascript in the browser, then when you hit execute, send the details of the moves in a single action.
+The javascript option feels like the right step, but it means my app wouldn't be playable from cURL, which I liked the idea of.  I'm not sure how much I like that idea though, so I think we'll drop the text-based curl mode, and go with Javascript.
+
+Let's get coding again
