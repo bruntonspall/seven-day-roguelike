@@ -38,3 +38,11 @@ The other alternative is to make the setting of the targets to be done in javasc
 The javascript option feels like the right step, but it means my app wouldn't be playable from cURL, which I liked the idea of.  I'm not sure how much I like that idea though, so I think we'll drop the text-based curl mode, and go with Javascript.
 
 Let's get coding again
+
+== 10 minutes later
+
+We have our first lack of internet problem.  I've not done coffeescript in Scalatra before, or at least not recently, and so I don't have the relevant local libraries.
+
+I'm using my phone as a Wifi Hotpsot, but on a speeding train, with tunnels, it isn't brilliant.
+
+I'll give it another 5 minutes, then I'll remove the coffeescript processors for now, and do it in plain javascript.
