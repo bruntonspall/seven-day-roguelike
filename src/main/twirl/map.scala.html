@@ -24,13 +24,13 @@
     @for(y <- 0 to world.height-1) {
       <div class="row">
         @for(x <- 0 to world.width-1) {
-          <span class="glyph" data-x=@x data-y=@y>@Html(world.getRenderableAt(x,y).render)</span>
+          <span class="glyph" id=@{"cell-"+x+"-"+y} data-x=@x data-y=@y>@Html(world.getRenderableAt(x,y).render)</span>
         }
       </div>
     }
   </div>
   <div class="buttons">
-    <input type="button" class="execute" >Execute</input>
+    <input type="button" class="execute" value="Execute" />
   </div>
 	</body>
 </html>
