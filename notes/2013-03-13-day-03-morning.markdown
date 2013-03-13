@@ -21,6 +21,111 @@ Instead I'm going to refactor my display code, so I'm going to pass more complex
 That way the javascript for onclick can just be build an action for current character, to move x and y to the clicked x and y.
 
 Littering the map with monsters could be done a variety of ways.  What I'm going to do for now is generate say 2-5 monsters, then randomly sample x and y locations until I find one with a passable flag.  I'll put a monster there.
-I'll have to avoid putting a monster on top of another monster, but that should generate a reasonable random placement.  It's not pretty, it's not efficeint, but it's worth a try.
+I'll have to avoid putting a monster on top of another monster, but that should generate a reasonable random placement.  It's not pretty, it's not efficient, but it's worth a try.
 
 Lets give this a go
+
+## An hour later
+
+That was astonishingly successful.
+
+I refactored my model, I'll write some more about that later, but essentially instead of creating lots of separate objects, I've got a single object with a list of case class instances inside it.
+
+I completely refactored the model to enable the rendering of both tiles and mobiles in the same way, and to enable the x and y attributes to be available.
+
+I added the validation of moves, and then realised that I had rewritten the move logic so had to rewrite it again, but it works, you just don't move if you submit an invalid move.
+
+Finally I added some javascript to allow you to click a neighbouring cell, then hit the execute button and it sends the move to the server and refreshes the screen.
+
+A pretty good hour if I do say so myself.
+
+## Getting down and technical
+
+Over lunch I've got some time to write up some of the technical details, so here goes.
+
+The refactoring of the model classes was the most interesting.
+
+I'd started the project with an abstract class to represent a Tile, which had attributes like passable, openable and the glyph to render it as.
+Once I'd created mobiles, such as the player character, there was some commonality, but a lot of differences.  Both had a glyph like rendering, but they were fundamentally different objects.
+Also Mobiles were the only things that had an x and y coordinate, the tiles were more like prototypes, and so they didn't have an x and y since they were repeated all over the map.
+
+I'd created each tile as an object, because I only wanted a single instance, and objects kind of give you that access, but it wasn't good use of the object style, and it felt very clumsy.
+
+An example tile would be the Wall tile,
+```scala
+object WallTile extends BaseTile {
+  val glyph = '#'
+  val htmlGlyph = "#"
+  val passable = false
+  val openable = false
+}
+```
+
+It has an ascii glyph and a htmlglyph.  The only reason for the html glyph is because the space tile needs to actually render a non-breaksing space string rather than a single character (html renderers will treat a span or div with just spaces in as empty and collapse the width.  the nbsp will prevent that).
+
+My realisation was that I simply had a list of tiles, they belong somewhere, like a tiles object, but each tile prototype can be an instance on that object.  So it now looks like:
+
+```scala
+object Tiles {
+  val floor = BaseTile(passable = true, openable = false, Glyph('.'))
+  val exitZone = BaseTile(passable = true, openable = false, Glyph('X'))
+  val wall = BaseTile(passable = false, openable = false, Glyph('#'))
+  val space = BaseTile(passable = false, openable = false, Glyph(' '))
+  val door = BaseTile(passable = false, openable = true, Glyph('='))
+  val all = floor :: wall :: space :: door :: exitZone :: Nil
+  val charLookup = all.map { tile => tile.glyph.glyph -> tile }.toMap
+}
+```
+
+Note that I've had to manually build a list of all of the tiles.  I only ever need a special default tile to be named, so I could inline the rest and not have to maintain two lists, but that can go down as tech debt for now.
+Secondly I build a reverse lookup table, so I can find a tile instance given the glyph character that I expect to be used.  This lets me produce a map as a big array of ascii characters, then turn it into tile instances just by looking up the ascii character.
+I also made a MapElement class that is what is actually created.
+```scala
+case class MapElement(x: Int, y: Int, tile: BaseTile) extends Renderable {
+  def glyph = tile.glyph
+}
+```
+
+My world creation now looks like:
+
+```scala
+def create() = {
+    val map = for {
+      y <- 0 to tiles.length - 1
+    } yield {
+      for (x <- 0 to tiles(y).length - 1)
+        yield MapElement(x, y, Tiles.charLookup.getOrElse(tiles(y)(x), Tiles.space))
+    }
+    World(tiles(0).length, tiles.length, map)
+  }
+```
+Bar the terrible for syntax, this returns a sequence of sequence of MapElements.  
+Each MapElement has an x and y coordinate, and a tile object that represents what tile it consists of.  This could easily be extended to add features about quest locations, placed treasures, and so forth.
+The MapElement becomes important when I render the page, since instead of just iterating through a sequence of rows (each a sequence of tiles), I can now get each tile and rendering information about it's x and y information.
+
+That information will be used to help implement the javascript code that is going to let us click on locations on the map, and means I can do things like highlight node 2,13 easily.  Win!
+
+Finally you may have noticed that MapElement extends something called Renderable.  This is a trait that just says I can pass around MapElements or Mobiles as a Renderable instance and that it will support the glyph method that returns a renderable glyph.
+
+I simplified the glyph code as well,
+
+```scala
+case class Glyph(glyph: Char) {
+  def htmlGlyph: String = glyph match {
+    case ' ' => "&nbsp;"
+    case x => x.toString
+  }
+}
+```
+
+The Glyph is now just initialised with the character that I expect to use, and my one weird use-case is matched into the Glyph class.  Much nicer.
+
+I'm pretty happy for a mornings work, I have a couple of ideas for the evening.
+* Add monsters
+* Improve the server communications
+
+My biggest issue at the moment is that playing locally is very slow, a couple of seconds in between submitting and getting the full response.
+I've seen this before, it's a weird bug with my very old version of JRebel and AppEngine, and it'll be faster in production, but it concerns me.
+I could do some improvements over the networking, allowing the client to keep a channel open to the server, which might speed up the process, and allow partial updates via javascript.
+
+However, having a fancy fast prototype where you can walk around a maze is not as good as having a slow prototype that has monsters, so monsters is my primary goal at the moment.
