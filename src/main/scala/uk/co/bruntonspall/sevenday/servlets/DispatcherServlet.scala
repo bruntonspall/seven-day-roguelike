@@ -17,7 +17,7 @@ import ActionProtocol._
 class DispatcherServlet extends ScalatraServlet with TwirlSupport {
   val world = World.map0
 
-  override def initialize(config: ServletConfig): Unit = {
+  override def initialize(config: ServletConfig) {
     super.initialize(config)
     world.createMobileAt(1, 1, 13, Glyph('@'))
     world.distributeMonsters()
@@ -46,8 +46,8 @@ class DispatcherServlet extends ScalatraServlet with TwirlSupport {
           world.moveMobile(player, action.x, action.y)
         }
       }
-
     }
+    World.runAI
   }
 
 }
