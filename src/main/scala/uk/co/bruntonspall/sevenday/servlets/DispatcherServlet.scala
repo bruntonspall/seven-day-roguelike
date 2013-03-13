@@ -19,7 +19,8 @@ class DispatcherServlet extends ScalatraServlet with TwirlSupport {
 
   override def initialize(config: ServletConfig): Unit = {
     super.initialize(config)
-    world.createMobileAt(1, 13, Mobile(1, 1, 13, Glyph('@')))
+    world.createMobileAt(1, 1, 13, Glyph('@'))
+    world.distributeMonsters()
   }
 
   get("/") {
