@@ -4,6 +4,7 @@ import org.scalatra.ScalatraServlet
 import uk.co.bruntonspall.sevenday.scalatra.TwirlSupport
 import uk.co.bruntonspall.sevenday.model._
 import cc.spray.json._
+import scala.math.abs
 
 object Renderer {
   def render(map: World, character: List[Mobile]): Seq[Seq[String]] = {
@@ -39,7 +40,11 @@ class DispatcherServlet extends ScalatraServlet with TwirlSupport {
     val actions = params("actions").asJson.convertTo[List[Action]]
     contentType = "text/json"
     actions.foreach { action =>
-      player = PlayerMobile(action.x, action.y, player.glyph, player.htmlGlyph)
+      if (abs(player.x - action.x) <= 1 &&
+        abs(player.y - action.y) <= 1 &&
+        world.getTileAt(action.x, action.y).passable == true)
+        player = PlayerMobile(action.x, action.y, player.glyph, player.htmlGlyph)
+
     }
   }
 
