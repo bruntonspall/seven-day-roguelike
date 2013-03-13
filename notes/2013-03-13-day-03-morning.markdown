@@ -1,0 +1,26 @@
+# Another bright cheerful morning
+
+So last night went pretty well despite limited time.  I've got a map, I can move around it without any rules, but it's broadly speaking working.
+
+We're not supporting multiplayer at all yet, we have no monsters, no treasures, no shooting and no movement restrictions.
+
+The tasks I've got left in priority order are
+* Restrict movement commands to 1 square per step
+* Enable browser based click and execute functions
+* Put monsters on the map (at random for now)
+* Make monsters take a random walk each execute
+
+That is my vague aim by the end of the day.
+
+Restricting movement should be pretty easy, for each action submitted, we check that the x and y are within 1 of the characters x and y.  We can work that out by simply doing abs(x-character.x) <= 1 && abs(y-character.y) <= 1.
+
+The browser click and execute might be a bit more tricky.  At the moment the map on the dom is represented by a sequence of Glyph's, each glyph is simplya "character", or a non-breaking space for a space tile.
+At render time, I don't really know the x and y coordinates, which means in javascript working out the x and y of where you clicked could be a bit tricky.
+I could write some javascript to try to work it out, by counting the cell and row classes, and applying some x and y logic, but since we know that information in the map representation on the server it seems pointless to re-build it.
+Instead I'm going to refactor my display code, so I'm going to pass more complex Glyph objects to the renderer, which can render a span with data elements, so data-x and data-y.
+That way the javascript for onclick can just be build an action for current character, to move x and y to the clicked x and y.
+
+Littering the map with monsters could be done a variety of ways.  What I'm going to do for now is generate say 2-5 monsters, then randomly sample x and y locations until I find one with a passable flag.  I'll put a monster there.
+I'll have to avoid putting a monster on top of another monster, but that should generate a reasonable random placement.  It's not pretty, it's not efficeint, but it's worth a try.
+
+Lets give this a go
