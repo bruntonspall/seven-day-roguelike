@@ -1,4 +1,4 @@
-@(map:Seq[Seq[String]])
+@(world:World)
 <!DOCTYPE html>
 <html lang="en">
 	<head>
@@ -21,10 +21,10 @@
   <body>
     <h1>Space 7-Day Roguelike</h1>
     <div class="map">
-    @for(row <- map) {
+    @for(y <- 0 to world.height-1) {
       <div class="row">
-        @for(cell <- row) {
-          <span class="glyph">@Html(cell)</span>
+        @for(x <- 0 to world.width-1) {
+          <span class="glyph" data-x=@x data-y=@y>@Html(world.getRenderableAt(x,y).render)</span>
         }
       </div>
     }

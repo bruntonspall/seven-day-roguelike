@@ -1,36 +1,35 @@
 package uk.co.bruntonspall.sevenday.model
+import scala.collection.mutable
 
-abstract class BaseTile {
-  def passable: Boolean
-  def openable: Boolean
-  def glyph: Char
-  def htmlGlyph: String
+case class Glyph(glyph: Char) {
+  def htmlGlyph: String = glyph match {
+    case ' ' => "&nbsp;"
+    case x => x.toString
+  }
 }
 
-object FloorTile extends BaseTile {
-  val glyph: Char = '.'
-  val htmlGlyph = "."
-  val passable = true
-  val openable = false
+trait Renderable {
+  def glyph: Glyph
+  def render: String = glyph.htmlGlyph
 }
-object WallTile extends BaseTile {
-  val glyph = '#'
-  val htmlGlyph = "#"
-  val passable = false
-  val openable = false
+
+case class BaseTile(passable: Boolean, openable: Boolean, glyph: Glyph) extends Renderable
+
+object Tiles {
+  val floor = BaseTile(passable = true, openable = false, Glyph('.'))
+  val exitZone = BaseTile(passable = true, openable = false, Glyph('X'))
+  val wall = BaseTile(passable = false, openable = false, Glyph('#'))
+  val space = BaseTile(passable = false, openable = false, Glyph(' '))
+  val door = BaseTile(passable = false, openable = true, Glyph('='))
+  val all = floor :: wall :: space :: door :: exitZone :: Nil
+  val charLookup = all.map { tile => tile.glyph.glyph -> tile }.toMap
 }
-object SpaceTile extends BaseTile {
-  val glyph = ' '
-  val htmlGlyph = "&nbsp;"
-  val passable = false
-  val openable = false
+
+case class MapElement(x: Int, y: Int, tile: BaseTile) extends Renderable {
+  def glyph = tile.glyph
 }
-object DoorTile extends BaseTile {
-  val glyph = '='
-  val htmlGlyph = "="
-  val passable = false
-  val openable = true
-}
+
+case class Mobile(id: Int, var x: Int, var y: Int, glyph: Glyph) extends Renderable
 
 object World {
   val tiles: Seq[Seq[Char]] =
@@ -58,15 +57,12 @@ object World {
       "   #.....#...#...#....# ",
       "   #################### ")
 
-  def tileObjs = List(FloorTile, SpaceTile, WallTile, DoorTile)
-  def lookup(glyph: Char): List[BaseTile] =
-    for { tile <- tileObjs if tile.glyph == glyph } yield tile
   def create() = {
     val map = for {
-      row <- tiles
+      y <- 0 to tiles.length - 1
     } yield {
-      for (tile <- row)
-        yield lookup(tile).headOption.getOrElse(SpaceTile)
+      for (x <- 0 to tiles(y).length - 1)
+        yield MapElement(x, y, Tiles.charLookup.getOrElse(tiles(y)(x), Tiles.space))
     }
     World(tiles(0).length, tiles.length, map)
   }
@@ -74,7 +70,23 @@ object World {
   lazy val map0 = create()
 }
 
-case class World(val width: Int, val height: Int, val rows: Seq[Seq[BaseTile]]) {
+case class World(width: Int, height: Int,
+    rows: Seq[Seq[MapElement]],
+    charactersByLocation: mutable.Map[Tuple2[Int, Int], Mobile] = mutable.Map.empty,
+    charactersById: mutable.Map[Int, Mobile] = mutable.Map.empty) {
   def getTileAt(x: Int, y: Int) = rows(y)(x)
+  def getMobileAt(x: Int, y: Int) = charactersByLocation.get((x, y))
+  def getMobile(id: Int) = charactersById.get(id)
+  def createMobileAt(x: Int, y: Int, mobile: Mobile) = {
+    charactersByLocation.put((x, y), mobile)
+    charactersById.put(mobile.id, mobile)
+  }
+  def moveMobile(existing: Mobile, x: Int, y: Int) = {
+    charactersByLocation.remove((existing.x, existing.y))
+    existing.x = x
+    existing.y = y
+    charactersByLocation.put((x, y), existing)
+  }
+  def getRenderableAt(x: Int, y: Int) = getMobileAt(x, y).getOrElse(getTileAt(x, y))
 }
 
