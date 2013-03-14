@@ -57,6 +57,12 @@ I'd like to allow for shots missing the main target to hit other targets in the 
 
 Let's give it a try
 
+## 1 hour later
+
+You can shoot stuff, and I killed an alien!  I don't think the health is going down properly though when I check the debug logs, so I'm not sure exactly how I killed an alien.
+
+The monsters don't fight back, and I've still got some ui issues about giving orders that will make squad work hard.
+
 _This was made while listening to [Blink 192: Greatest Hits](), a reminder of my youth_
 [Seven-Day-Roguelike](http://github.com/bruntonspall/seven-day-roguelike) is a scala and appengine [7-day-roguelike](http://7drl.org) project by [bruntonspall](http://www.brunton-spall.co.uk)
 
