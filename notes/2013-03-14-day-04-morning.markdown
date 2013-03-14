@@ -63,7 +63,8 @@ You can shoot stuff, and I killed an alien!  I don't think the health is going d
 
 The monsters don't fight back, and I've still got some ui issues about giving orders that will make squad work hard.
 
-_This was made while listening to [Blink 192: Greatest Hits](), a reminder of my youth_
+_This was made while listening to [Blink 192: Greatest Hits](http://www.amazon.co.uk/gp/product/B001KWG6AU/ref=as_li_ss_tl?ie=UTF8&camp=1634&creative=19450&creativeASIN=B001KWG6AU&linkCode=as2&tag=michbrunspalo-21), a reminder of my youth_
+
 [Seven-Day-Roguelike](http://github.com/bruntonspall/seven-day-roguelike) is a scala and appengine [7-day-roguelike](http://7drl.org) project by [bruntonspall](http://www.brunton-spall.co.uk)
 
 
