@@ -71,3 +71,12 @@ I think a few simple strategies could build an interesting AI for creatures.
 
 Anyway, onto the coding
 
+## That went well
+
+Now we have monsters, distributed across the map, and a simple run AI method that moves the monsters around randomly.
+
+Tomorrow we fight!
+
+[Seven-Day-Roguelike](http://github.com/bruntonspall/seven-day-roguelike) is a scala and appengine [7-day-roguelike](http://7drl.org) project by [bruntonspall](http://www.brunton-spall.co.uk)
+
+
