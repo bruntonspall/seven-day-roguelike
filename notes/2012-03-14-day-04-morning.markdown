@@ -1,0 +1,63 @@
+# Day 04 - Morning - It's fight time
+
+Today I'm going to shoot stuff.  This might be more complex than it sounds.
+
+Stories aren't fun without conflict of some form, and the simplest form of conflict in a roguelike is to kill stuff.
+We've already got monsters that meander around the map, so adding the facility to kill them shouldn't be impossible right?
+
+Actually this is going to be a bit more complex than just adding some hit points.  There's a bunch of stuff
+I'll need to think about when I do it.
+
+* The user interface - how do I pick what to shoot
+* The hit and damage mechanic itself
+* Making monsters fight back
+
+## The UI
+
+I don't have a good UI yet anyway, you can select any square to move to, hit execute and you simply don't move,
+no warnings, no feedback etc.  Adding shooting to this already broken UI might be interesting.
+
+I think I'm going to extend the broken UI, so if you select a monster and hit execute, instead of moving to the location,
+it will interpret that as wanting to shoot at the monster.  It's not a great system, but it'll enable me to get moving.
+
+If I had more time to work on this, I'd probably look at improving the selection system.  It would be nice to be able
+to show a character status bar, so you aren't an anonymous @ symbol, and the monsters aren't just M symbols.
+I'd add some javascript / client side UI functions to improve the selection of squares.
+
+I'd also quite like to be able to choose between moving, sprinting, shooting and "move and shoot". As a squad, the tactics
+that you can do are quite important, but this is a prototype, and we've only got a few hours left, so point and click it is.
+
+## The combat system
+
+Combat systems are fascinating.  RPG's have a lot to answer for in combat systems.  Because of the history of most
+games is based on early RPG's, a lot of computer game systems seem to be based on RPG style systems (anything where you
+roll to hit, then roll for damage for example).  The problem with RPG combat systems is that RPG's are narrative.
+There is a human in a traditional pen and paper role playing game who is narritavely interpreting the combat system.
+In dungeons and dragons, missing the kobold by just 1 or 2 might be described as "jumping up on the table, and trading
+blows with the kobold sat eating, you swing mightly at him, but he is too quick and darts to the side, with your sword
+whistling down where he just say".  In a roguelike it will be described as "you missed".
+RPG based combat systems can be simplistic, because all of the complexity can be narrated away by the humans.
+
+That said, the benefit of DnD style combat systems is that they are trivialy simple to implement.  You get a to-hit roll
+that you add situational bonuses and penalties too.  Armour prevents hits, not damage, so a nimble thief, and a plate armor
+wearing paladin feel like they get hit just as often.  Damage is rolled only on successful hits and is primarily influenced
+by weapon type, with some occasional special resistences and penalties applied based on magical whatsits.
+
+We are going to go for a shooting based system for the player and a hand to hand system for the monsters.  I want the player
+to end up back pedelling down the corridor, shooting at the encroaching horde of monsters (note: not in the prototype).
+
+My feeling is that from scifi and other movies, I want to see lots more messages like "You hit it, but barely scratched it".
+
+We'll start with a simplistic, you hit 80% of the time.  We'll give the monsters a damage resistence quantity, and make them
+resist taking damage from around 50% of shots from the player normally.  That means if we shoot 5 times, we should expect 4 to hit,
+but only 2 two do damage.  Given the map, I think giving the monsters the ability to take 2 shots feels about right.
+
+I'm going to use a very simplistic model for now, I want to come back and adjust hit percentages based on range and weapon.
+I'd like to allow for shots missing the main target to hit other targets in the cone.  I'll add it all to my mental TODO list.
+
+Let's give it a try
+
+_This was made while listening to [Blink 192: Greatest Hits](), a reminder of my youth_
+[Seven-Day-Roguelike](http://github.com/bruntonspall/seven-day-roguelike) is a scala and appengine [7-day-roguelike](http://7drl.org) project by [bruntonspall](http://www.brunton-spall.co.uk)
+
+
