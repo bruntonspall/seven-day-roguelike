@@ -58,9 +58,19 @@ case class Mobile(id: Int, var x: Int, var y: Int, var health: Int, template: Mo
       World.map0.moveMobile(this, target.x, target.y)
     }
   }
-  def damage(dam: Int) {
-    if (dam > template.resistance)
+  def damage(dam: Int): String = {
+    if (dam == 0)
+      "A glancing shot"
+    else if (dam <= template.resistance)
+      "minor scratches"
+    else {
       health -= dam - template.resistance
+      health match {
+        case 0 => "spraying blood everywhere"
+        case 1 => "oozing ichor"
+        case _ => "a clean shot"
+      }
+    }
   }
 }
 
@@ -93,11 +103,9 @@ object World {
   def create() = {
     val map = for {
       y <- 0 to tiles.length - 1
-    } yield {
-      for (x <- 0 to tiles(y).length - 1)
-        yield MapElement(x, y, Tiles.charLookup.getOrElse(tiles(y)(x), Tiles.space))
-    }
-    World(tiles(0).length, tiles.length, map)
+      x <- 0 to tiles(y).length - 1
+    } yield (x, y) -> MapElement(x, y, Tiles.charLookup.getOrElse(tiles(y)(x), Tiles.space))
+    World(tiles(0).length, tiles.length, map.toMap)
   }
 
   val MONSTER_START_ID = 1000
@@ -115,17 +123,41 @@ object World {
       }
     }
     map0.charactersById.values.foreach(_.runAI)
+    map0.clearVisibility()
+  }
+
+  def line(x1: Int, y1: Int, x2: Int, y2: Int): List[(Int, Int)] = {
+    // Simple line of sight algorithm
+    // Draw a straight line from (x1,y1) to (x2,y2)
+    // If all tiles are passable, return true
+    val dx = math.abs(x2 - x1)
+    val dy = math.abs(y2 - y1)
+    val sx = if (x1 < x2) 1 else -1
+    val sy = if (y1 < y2) 1 else -1
+    @annotation.tailrec
+    def recLine(x: Int, y: Int, e: Double, acc: List[(Int, Int)]): List[(Int, Int)] = {
+      if (x == x2 && y == y2) (x, y) :: acc
+      else
+        recLine(
+          if (e > -dx) x + sx else x,
+          if (e < dy) y + sy else y,
+          e + (if (e > -dx) -dy else 0) + (if (e < dy) dx else 0),
+          (x, y) :: acc)
+    }
+    val err = (if (dx > dy) dx else -dy) / 2
+    recLine(x1, y1, err, List()).reverse
   }
 
 }
 
 case class World(width: Int, height: Int,
-    rows: Seq[Seq[MapElement]],
+    private val rows: Map[Tuple2[Int, Int], MapElement],
     charactersByLocation: mutable.Map[Tuple2[Int, Int], Mobile] = mutable.Map.empty,
     charactersById: mutable.Map[Int, Mobile] = mutable.Map.empty,
-    statusMessages: mutable.MutableList[String] = mutable.MutableList.empty) {
+    var statusMessages: List[String] = List.empty) {
+  val visibilityMap: mutable.Map[(Int, Int), Boolean] = mutable.Map.empty
   def addStatusLine(s: String) {
-    statusMessages += s
+    statusMessages = s :: statusMessages
   }
 
   def rndCoord(): Tuple2[Int, Int] = (World.rndNum(width), World.rndNum(height))
@@ -149,9 +181,37 @@ case class World(width: Int, height: Int,
     }
   }
 
-  def getTileAt(x: Int, y: Int) = rows(y)(x)
+  def getTileAt(x: Int, y: Int): MapElement = rows.getOrElse((x, y), MapElement(x, y, Tiles.space))
+  //rows(x)(y) 
+  //rows.getOrElse(y, List()).getOrElse(x, Tiles.space)
   def getMobileAt(x: Int, y: Int) = charactersByLocation.get((x, y))
   def getMobile(id: Int) = charactersById.get(id)
+
+  def clearVisibility() {
+    visibilityMap.clear
+  }
+
+  def visibleToMobile(id: Int, x: Int, y: Int): Boolean = {
+    val visOpt = visibilityMap.get((x, y))
+    if (visOpt.isDefined) visOpt.get
+    else {
+      val mob = getMobile(1).get
+      val visibility = World
+        .line(mob.x, mob.y, x, y)
+        .map { case (tx, ty) => (tx, ty) -> getTileAt(tx, ty).tile.passable }
+      visibility
+        .takeWhile { case (_, vis) => vis }
+        .foreach { case ((x, y), vis) => visibilityMap.put((x, y), vis) }
+
+      visibilityMap.get((x, y)).getOrElse(false)
+    }
+  }
+
+  def lineOfSight(x1: Int, y1: Int, x2: Int, y2: Int): Boolean = {
+    val passing = World.line(x1, y1, x2, y2).map { case (tx, ty) => getTileAt(tx, ty).tile.passable }
+    !passing.contains(false)
+  }
+
   def createMobileAt(id: Int, x: Int, y: Int, prototype: MobilePrototype) = {
     println("Creating mobile: " + prototype + " at (" + x + "," + y + ")")
     val mobile = Mobile(id, x, y, prototype.health, prototype)

@@ -39,29 +39,31 @@ class DispatcherServlet extends ScalatraServlet with TwirlSupport {
         val player = world.getMobile(action.character).get
         println("Player is currently: " + player)
         println("Target tile is :" + world.getTileAt(action.x, action.y))
-        val targetOpt = world.getMobileAt(action.x, action.y)
-        targetOpt match {
-          case Some(target) => {
-            // Shoot at the target.
-            println("Shooting at " + target)
-            val hit = World.rndNum(5)
-            val damage = World.rndNum(4)
-            println("HIt: " + hit + " - Damage: " + damage)
-            if (hit > 0) {
-              target.damage(damage)
-              println("Damage done to " + target)
-              world.addStatusLine("You hit the " + target.name)
+        if (world.visibleToMobile(1, action.x, action.y)) {
+          val targetOpt = world.getMobileAt(action.x, action.y)
+          targetOpt match {
+            case Some(target) => {
+              // Shoot at the target.
+              println("Shooting at " + target)
+              val hit = World.rndNum(5)
+              val damage = World.rndNum(6)
+              println("HIt: " + hit + " - Damage: " + damage)
+              if (hit > 0) {
+                val description = target.damage(damage)
+                println("Damage done to " + target)
+                world.addStatusLine("You hit the " + target.name + " - " + description)
+              }
+            }
+            case _ => {
+              if (abs(player.x - action.x) <= 1 &&
+                abs(player.y - action.y) <= 1 &&
+                world.getTileAt(action.x, action.y).tile.passable == true) {
+                println("Moving player")
+                world.moveMobile(player, action.x, action.y)
+              }
             }
           }
-          case _ => {
-            if (abs(player.x - action.x) <= 1 &&
-              abs(player.y - action.y) <= 1 &&
-              world.getTileAt(action.x, action.y).tile.passable == true) {
-              println("Moving player")
-              world.moveMobile(player, action.x, action.y)
-            }
-          }
-        }
+        } else { println("Can't see target") }
       }
     }
     World.runTurn
