@@ -20,6 +20,7 @@ class DispatcherServlet extends ScalatraServlet with TwirlSupport {
   override def initialize(config: ServletConfig) {
     super.initialize(config)
     world.createMobileAt(1, 1, 13, MonsterTypes.squadMember)
+    world.createMobileAt(2, 1, 14, MonsterTypes.squadMember)
     world.distributeMonsters()
   }
 
@@ -39,7 +40,7 @@ class DispatcherServlet extends ScalatraServlet with TwirlSupport {
         val player = world.getMobile(action.character).get
         println("Player is currently: " + player)
         println("Target tile is :" + world.getTileAt(action.x, action.y))
-        if (world.visibleToMobile(1, action.x, action.y)) {
+        if (world.visibleToPlayer(action.x, action.y)) {
           val targetOpt = world.getMobileAt(action.x, action.y)
           targetOpt match {
             case Some(target) => {

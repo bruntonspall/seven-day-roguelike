@@ -1,0 +1,24 @@
+.glyph {
+  float: left;
+  display: block;
+  width: 18px;
+  height: 18px;
+}
+.row {
+  clear: both;
+}
+.buttons, .messages {
+  clear:both;
+}
+.glyph {
+  background-color: #bbb;
+}
+.visible {
+  background-color: #fff;
+}
+.player1 {
+  color: #c00;
+}
+.player2 {
+  color: #00c;
+}

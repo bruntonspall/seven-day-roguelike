@@ -4,25 +4,8 @@
 	<head>
     <title>Map</title>
     <style type="text/css">
-    .glyph {
-      float: left;
-      display: block;
-      width: 18px;
-      height: 18px;
-    }
-    .row {
-      clear: both;
-    }
-    .buttons, .messages {
-      clear:both;
-    }
-    .glyph {
-      background-color: #bbb;
-    }
-    .visible {
-      background-color: #fff;
-    }
-    </style>
+  </style>
+  <link rel="stylesheet" href="css/app.css" />
     <script type="text/javascript" src="js/jquery-1.7.2.min.js"></script>
     <script type="text/javascript" src="js/app.js"></script>
     <script type="text/javascript" src="compiled/scripts.js"></script>
@@ -33,7 +16,7 @@
     @for(y <- 0 to world.height-1) {
       <div class="row">
         @for(x <- 0 to world.width-1) {
-        <span class=@if(world.visibleToMobile(1,x,y)){"glyph visible"}else{"glyph"} id=@{"cell-"+x+"-"+y} data-x=@x data-y=@y>@Html(world.getRenderableAt(x,y).render)</span>
+        <span class="@world.getDisplayClass(x,y).mkString(" ")" id=@{"cell-"+x+"-"+y} data-x=@x data-y=@y>@Html(world.getRenderableAt(x,y).render)</span>
         }
       </div>
     }

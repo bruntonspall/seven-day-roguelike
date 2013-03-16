@@ -160,6 +160,13 @@ case class World(width: Int, height: Int,
     statusMessages = s :: statusMessages
   }
 
+  def getDisplayClass(x: Int, y: Int) = {
+    "glyph" ::
+      (if (visibleToPlayer(x, y)) "visible" else "") ::
+      (if (containsPlayer(x, y)) "player" + getMobileAt(x, y).get.id else "") ::
+      Nil
+  }
+
   def rndCoord(): Tuple2[Int, Int] = (World.rndNum(width), World.rndNum(height))
 
   def distributeMonsters() {
@@ -186,12 +193,13 @@ case class World(width: Int, height: Int,
   //rows.getOrElse(y, List()).getOrElse(x, Tiles.space)
   def getMobileAt(x: Int, y: Int) = charactersByLocation.get((x, y))
   def getMobile(id: Int) = charactersById.get(id)
+  def containsPlayer(x: Int, y: Int) = getMobileAt(x, y).map { _.template == MonsterTypes.squadMember }.getOrElse(false)
 
   def clearVisibility() {
     visibilityMap.clear
   }
 
-  def visibleToMobile(id: Int, x: Int, y: Int): Boolean = {
+  def visibleToPlayer(x: Int, y: Int): Boolean = {
     val visOpt = visibilityMap.get((x, y))
     if (visOpt.isDefined) visOpt.get
     else {
