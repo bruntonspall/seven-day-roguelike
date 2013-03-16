@@ -52,7 +52,7 @@ class DispatcherServlet extends ScalatraServlet with TwirlSupport {
     // We'l worry about sessions, users and stuff tomorrow
     // For now, we'll assume one single player (me), and one world
     // I suspect we'll want a compositing renderer at some point
-    html.map.render(getWorld)
+    html.map.render(getWorld, userService)
   }
 
   post("/execute") {

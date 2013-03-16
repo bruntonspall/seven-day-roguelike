@@ -1,4 +1,4 @@
-@(world:World)
+@(world:World, userService: com.google.appengine.api.users.UserService)
 <!DOCTYPE html>
 <html lang="en">
 	<head>
@@ -11,7 +11,9 @@
     <script type="text/javascript" src="compiled/scripts.js"></script>
 	</head>
   <body>
-    <h1>Space 7-Day Roguelike</h1>
+    <h1>Seven Days in Space</h1>
+    <p>Welcome @userService.getCurrentUser.getNickname - This is a <a href="http://7drl.org">seven day roguelike</a> by <a href="http://twitter.com/bruntonspall">@@bruntonspall</a>. You can read the <a href="http://7drl-scala.tumblr.com/">Dev Blog</a> or <a href="http://github.com/bruntonspall/seven-day-roguelike">the code</a></p>
+    <p>The premise is that you are a squad of marines, and you must kill the aliens on the derelict ship.  Click an @@ symbol, then click a neighbouring square to move, or a M, F or A alien to shoot. Press execute once you've issued your orders</p>
     <div class="map">
     @for(y <- 0 to world.height-1) {
       <div class="row">
