@@ -1,0 +1,18 @@
+Nearly there
+
+Yesterday, I spent the day helping to run a conference (back there today), so I was pretty busy.  I also had to get a train at 6:45am, so my brain was not fully in it.
+
+However the combination of the work in the morning and the evening means I added a basic visibility map, done the most inefficient way, that means you can't shoot monsters through walls.
+
+The visiblity check is simply done by drawing a line from the player to the monster, and then walking the line looking to see if the tile underneath is visible.
+
+In order to make that less expensive (we do it for every tile on the map right now), I memoise the results into a mutableMap, and do a lookup in the map first, before drawing the line and walking it.
+
+There's a few things I'd do to improve it, at the moment we draw the world by going for x=0, y=0 to the full width and height of the map, and we check visiblity of each square.  That's pretty expensive, I'm drawing x*y lines for just the visiblity map.
+A better solution might be to start at the character, and explore all visible neighbours until there aren't any.  So we'd start at say 3,13, draw a line to the 8 neighbours and record the visiblity.  Now take the first one that is visible and repeat.
+Once we run out of visible tiles, we can ignore the rest of the map.
+
+But I don't have time for that as I want to try to do squad movement and attacking.
+My basic ui improvement will be to colour code the player symbols.  Clicking a player then a location will set an action to move/shoot from that character. So if we have two squad members, you'll click the red member, then the floor nearby which will go red, then you'll click blue member, and select a monster, which will go blue.  That will queue up two actions and hopefully it'll be easy to see what the team would do if you had 4 or so.
+
+Let's see if I can manage that.
