@@ -34,7 +34,6 @@ class DispatcherServlet extends ScalatraServlet with TwirlSupport {
   def getWorld = {
     Option(memcache.get(id)) match {
       case Some(world) =>
-        println("World fetched: " + world)
         world.asInstanceOf[World]
       case _ =>
         println("First session, building a new world")
@@ -43,7 +42,6 @@ class DispatcherServlet extends ScalatraServlet with TwirlSupport {
         world.createMobileAt(2, 1, 14, MonsterTypes.squadMember)
         world.distributeMonsters()
         memcache.put(id, world)
-        println("World created: " + world)
         world
     }
   }
@@ -76,7 +74,6 @@ class DispatcherServlet extends ScalatraServlet with TwirlSupport {
               println("HIt: " + hit + " - Damage: " + damage)
               if (hit > 0) {
                 val description = target.damage(damage)
-                println("Damage done to " + target)
                 world.addStatusLine("You hit the " + target.name + " - " + description)
               }
             }
