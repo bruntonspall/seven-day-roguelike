@@ -1,5 +1,5 @@
 var actions = [];
-var player = "player1";
+var player = 1;
 
 $(function() {
   $('.execute').click(function() {
@@ -17,15 +17,16 @@ $(function() {
      // If it's visible, target for active player
      // If it's not visible, do nothing
      if (cell.hasClass('player1')) {
-       player = "player1";
+       player = 1;
      }
      else if (cell.hasClass('player2')) {
-       player = "player2";
+       player = 2;
      } else if (cell.hasClass('visible')) {
        console.log("Moving character 1 to "+x+","+y);
        // TODO: We should untoggle the previous action
-       $('#cell-'+x+'-'+y).toggleClass(player);
-       actions.push({character:parseInt(player.substr(-1)), x:x, y:y})
+       var target = "player"+player+"-target";
+       $('#cell-'+x+'-'+y).toggleClass(target);
+       actions.push({character:player, x:x, y:y})
      }
  })
 });

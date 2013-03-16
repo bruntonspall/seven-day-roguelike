@@ -12,6 +12,7 @@
 }
 .glyph {
   background-color: #bbb;
+  padding: 1px;
 }
 .visible {
   background-color: #fff;
@@ -21,4 +22,12 @@
 }
 .player2 {
   color: #00c;
+}
+.player1-target {
+  padding: 0px;
+  border: 1px solid #c00;
+}
+.player2-target {
+  padding: 0px;
+  border: 1px solid #00c;
 }
