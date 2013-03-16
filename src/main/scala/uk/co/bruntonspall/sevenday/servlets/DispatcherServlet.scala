@@ -6,6 +6,8 @@ import uk.co.bruntonspall.sevenday.model._
 import cc.spray.json._
 import scala.math.abs
 import javax.servlet.ServletConfig
+import com.google.appengine.api.memcache._
+import com.google.appengine.api.users._
 
 case class Action(character: Int, x: Int, y: Int)
 object ActionProtocol extends DefaultJsonProtocol {
@@ -15,23 +17,46 @@ object ActionProtocol extends DefaultJsonProtocol {
 import ActionProtocol._
 
 class DispatcherServlet extends ScalatraServlet with TwirlSupport {
-  val world = World.map0
+  lazy val memcache = MemcacheServiceFactory.getMemcacheService()
+  lazy val userService = UserServiceFactory.getUserService()
+  def id = userService.getCurrentUser.getUserId
 
   override def initialize(config: ServletConfig) {
     super.initialize(config)
-    world.createMobileAt(1, 1, 13, MonsterTypes.squadMember)
-    world.createMobileAt(2, 1, 14, MonsterTypes.squadMember)
-    world.distributeMonsters()
+  }
+
+  before("*") {
+    if (userService.getCurrentUser == null) {
+      redirect(userService.createLoginURL(request.getRequestURI))
+    }
+  }
+
+  def getWorld = {
+    Option(memcache.get(id)) match {
+      case Some(world) =>
+        println("World fetched: " + world)
+        world.asInstanceOf[World]
+      case _ =>
+        println("First session, building a new world")
+        val world = World.create()
+        world.createMobileAt(1, 1, 13, MonsterTypes.squadMember)
+        world.createMobileAt(2, 1, 14, MonsterTypes.squadMember)
+        world.distributeMonsters()
+        memcache.put(id, world)
+        println("World created: " + world)
+        world
+    }
   }
 
   get("/") {
     // We'l worry about sessions, users and stuff tomorrow
     // For now, we'll assume one single player (me), and one world
     // I suspect we'll want a compositing renderer at some point
-    html.map.render(world)
+    html.map.render(getWorld)
   }
 
   post("/execute") {
+    val world = getWorld
     val actions = params("actions").asJson.convertTo[List[Action]]
     contentType = "text/json"
     actions.foreach { action =>
@@ -67,7 +92,8 @@ class DispatcherServlet extends ScalatraServlet with TwirlSupport {
         } else { println("Can't see target") }
       }
     }
-    World.runTurn
+    world.runTurn
+    memcache.put(id, world)
   }
 
 }

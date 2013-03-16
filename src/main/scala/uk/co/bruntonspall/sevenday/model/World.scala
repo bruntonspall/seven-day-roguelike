@@ -44,7 +44,7 @@ object MonsterTypes {
 case class Mobile(id: Int, var x: Int, var y: Int, var health: Int, template: MobilePrototype) extends Renderable {
   def name = template.name
   def glyph = template.glyph
-  def runAI = {
+  def runAI(world: World) = {
     // We don't do AI for the player
     if (id >= World.MONSTER_START_ID) {
       val dxy = for {
@@ -52,10 +52,10 @@ case class Mobile(id: Int, var x: Int, var y: Int, var health: Int, template: Mo
         dy <- List(-1, 0, 1)
       } yield (dx, dy)
       val edges = dxy.filterNot { case (dx, dy) => dx == 0 && dy == 0 }
-      val possibleTargets = edges.map { case (dx, dy) => World.map0.getTileAt(x + dx, y + dy) }.filter(_.tile.passable)
+      val possibleTargets = edges.map { case (dx, dy) => world.getTileAt(x + dx, y + dy) }.filter(_.tile.passable)
       val target = possibleTargets(World.rndNum(possibleTargets.length))
       println("Mobile " + this + " moves to " + target)
-      World.map0.moveMobile(this, target.x, target.y)
+      world.moveMobile(this, target.x, target.y)
     }
   }
   def damage(dam: Int): String = {
@@ -110,21 +110,7 @@ object World {
 
   val MONSTER_START_ID = 1000
 
-  lazy val map0 = create()
-
   def rndNum(max: Int): Int = math.floor(math.random * max).toInt
-
-  def runTurn() {
-    // Remove dead creatures and update the status messages
-    map0.charactersById.values.foreach { c =>
-      if (c.health <= 0) {
-        World.map0.removeMobile(c)
-        World.map0.addStatusLine("You killed a " + c.name)
-      }
-    }
-    map0.charactersById.values.foreach(_.runAI)
-    map0.clearVisibility()
-  }
 
   def line(x1: Int, y1: Int, x2: Int, y2: Int): List[(Int, Int)] = {
     // Simple line of sight algorithm
@@ -239,5 +225,18 @@ case class World(width: Int, height: Int,
   }
 
   def getRenderableAt(x: Int, y: Int) = getMobileAt(x, y).getOrElse(getTileAt(x, y))
+
+  def runTurn() {
+    // Remove dead creatures and update the status messages
+    charactersById.values.foreach { c =>
+      if (c.health <= 0) {
+        removeMobile(c)
+        addStatusLine("You killed a " + c.name)
+      }
+    }
+    charactersById.values.foreach(_.runAI(this))
+    clearVisibility()
+  }
+
 }
 
